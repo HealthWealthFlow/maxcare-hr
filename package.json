@@ -1,0 +1,42 @@
+{
+  "name": "maxcare-hr",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Maxcare Pharmacy — proactive leave management portal (employee + manager).",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "server": "node server/index.js",
+    "dev:server": "nodemon server/index.js",
+    "dev:all": "concurrently --restart-tries 5 --restart-delay 1000 -n server,web -c blue,green \"npm:dev:server\" \"npm:dev\"",
+    "start": "node server/index.js",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^2.4.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@vitejs/plugin-react": "^5.0.4",
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2",
+    "lucide-react": "^0.546.0",
+    "motion": "^12.23.24",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^6.2.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^10.0.5",
+    "esbuild": "^0.25.0",
+    "nodemon": "^3.1.14",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
+}

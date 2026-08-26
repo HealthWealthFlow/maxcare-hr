@@ -1,0 +1,6 @@
+{
+  "name": "Maxcare HR - Leave Management System",
+  "description": "Maxcare Pharmacy leave management platform with smart notice policy calculation, calendar planning, approvals workflow, and balance adjustments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
