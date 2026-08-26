@@ -17,12 +17,14 @@ export const LeaveHistory: React.FC = () => {
 
   const userRequests = leaveRequests.filter(r => r.employeeId === currentUser.id);
 
-  const filteredRequests = userRequests.filter(r => {
-    const matchesYear = r.startDate.startsWith(selectedYear);
-    const matchesType = typeFilter === 'all' || r.type === typeFilter;
-    const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-    return matchesYear && matchesType && matchesStatus;
-  });
+  const filteredRequests = userRequests
+    .filter(r => {
+      const matchesYear = r.startDate.startsWith(selectedYear);
+      const matchesType = typeFilter === 'all' || r.type === typeFilter;
+      const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+      return matchesYear && matchesType && matchesStatus;
+    })
+    .sort((a, b) => (a.startDate < b.startDate ? 1 : a.startDate > b.startDate ? -1 : 0));
 
   const totalTakenDays = userRequests
     .filter(r => r.status === 'approved' && r.startDate.startsWith(selectedYear))

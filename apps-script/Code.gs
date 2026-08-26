@@ -222,6 +222,52 @@ function appendObj(sheet, headers, obj) {
   sheet.appendRow(row);
 }
 
+// Remove Lee's old demo rows and set her real balances (annual 7 used, medical 2 used).
+function resetLee() {
+  var empSheet = ensureSheet('Employees', EMPLOYEE_HEADERS);
+  var leaveSheet = ensureSheet('LeaveRequests', LEAVE_HEADERS);
+  var drop = { 'REQ-1001A': true, 'REQ-1002B': true, 'REQ-1003C': true, 'REQ-1004D': true };
+  var rows = rowsToObjects(leaveSheet, LEAVE_HEADERS);
+  var kept = rows.filter(function (r) { return !(String(r.employeeId) === 'emp-1' && drop[String(r.id)]); });
+  writeRows(leaveSheet, LEAVE_HEADERS, kept);
+  var employees = rowsToObjects(empSheet, EMPLOYEE_HEADERS);
+  for (var i = 0; i < employees.length; i++) {
+    if (employees[i].id === 'emp-1') {
+      var values = empSheet.getDataRange().getValues();
+      var headers = values[0];
+      var rowValues = headers.map(function (h) {
+        var k = String(h);
+        if (k === 'annualUsed') return 7;
+        if (k === 'annualPending') return 0;
+        if (k === 'sickUsed') return 2;
+        if (k === 'unpaidApprovedYTD') return 0;
+        if (k === 'unpaidPending') return 0;
+        if (k === 'emergencyApprovedYTD') return 0;
+        if (k === 'emergencyPending') return 0;
+        return employees[i][k] !== undefined ? employees[i][k] : '';
+      });
+      empSheet.getRange(i + 2, 1, 1, headers.length).setValues([rowValues]);
+      break;
+    }
+  }
+}
+
+// Split Lee's grouped multi-day entries (REQ-1007G 3-day, REQ-1010J 2-day) into per-day records.
+function expandLee() {
+  var sheet = ensureSheet('LeaveRequests', LEAVE_HEADERS);
+  var removals = { 'REQ-1007G': true, 'REQ-1010J': true };
+  var rows = rowsToObjects(sheet, LEAVE_HEADERS);
+  var kept = rows.filter(function (r) { return !removals[String(r.id)]; });
+  var singles = [
+    { id:'REQ-1011K', employeeId:'emp-1', employeeName:'Lee Xin Mei', employeeRole:'Pharmacy Assistant', employeeAvatar:'', department:'Pharmacy', type:'annual', startDate:'2026-03-10', endDate:'2026-03-10', durationDays:1, reason:'Annual leave.', status:'approved', submittedDate:'2026-03-03', rejectionReason:'', isLate:false, requiredNoticeDays:7, actualNoticeDays:7 },
+    { id:'REQ-1012L', employeeId:'emp-1', employeeName:'Lee Xin Mei', employeeRole:'Pharmacy Assistant', employeeAvatar:'', department:'Pharmacy', type:'annual', startDate:'2026-03-11', endDate:'2026-03-11', durationDays:1, reason:'Annual leave.', status:'approved', submittedDate:'2026-03-03', rejectionReason:'', isLate:false, requiredNoticeDays:7, actualNoticeDays:7 },
+    { id:'REQ-1013M', employeeId:'emp-1', employeeName:'Lee Xin Mei', employeeRole:'Pharmacy Assistant', employeeAvatar:'', department:'Pharmacy', type:'annual', startDate:'2026-03-12', endDate:'2026-03-12', durationDays:1, reason:'Annual leave.', status:'approved', submittedDate:'2026-03-03', rejectionReason:'', isLate:false, requiredNoticeDays:7, actualNoticeDays:7 },
+    { id:'REQ-1014N', employeeId:'emp-1', employeeName:'Lee Xin Mei', employeeRole:'Pharmacy Assistant', employeeAvatar:'', department:'Pharmacy', type:'sick', startDate:'2026-06-16', endDate:'2026-06-16', durationDays:1, reason:'Medical certificate.', status:'approved', submittedDate:'2026-06-16', rejectionReason:'', isLate:false, requiredNoticeDays:0, actualNoticeDays:1 },
+    { id:'REQ-1015O', employeeId:'emp-1', employeeName:'Lee Xin Mei', employeeRole:'Pharmacy Assistant', employeeAvatar:'', department:'Pharmacy', type:'sick', startDate:'2026-06-17', endDate:'2026-06-17', durationDays:1, reason:'Medical certificate.', status:'approved', submittedDate:'2026-06-16', rejectionReason:'', isLate:false, requiredNoticeDays:0, actualNoticeDays:1 }
+  ];
+  writeRows(sheet, LEAVE_HEADERS, kept.concat(singles));
+}
+
 function doGet(e) {
   seed();
   var action = (e.parameter && e.parameter.action) || 'all';
@@ -234,6 +280,8 @@ function doGet(e) {
     if (action === 'deleteHoliday') { deleteHoliday(e.parameter); return json(snapshot()); }
     if (action === 'updatePolicy') { updatePolicy(e.parameter); return json(snapshot()); }
     if (action === 'updateEmployee') { updateEmployee(e.parameter); return json(snapshot()); }
+    if (action === 'resetLee') { resetLee(); return json(snapshot()); }
+    if (action === 'expandLee') { expandLee(); return json(snapshot()); }
     return json({ error: 'Unknown action: ' + action });
   } catch (err) {
     return json({ error: String(err) });
