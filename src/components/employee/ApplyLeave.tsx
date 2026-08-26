@@ -65,7 +65,7 @@ export const ApplyLeave: React.FC = () => {
         startDate,
         endDate,
         durationDays: durationDays,
-        reason: reason || (selectedType === 'annual' ? 'Annual leave' : selectedType === 'emergency' ? 'Family emergency' : 'Personal matter'),
+        reason: reason || (selectedType === 'annual' ? 'Annual leave' : selectedType === 'emergency' ? 'Family emergency' : selectedType === 'sick' ? 'Medical leave' : 'Personal matter'),
         supportingDocName: docFile ? docFile.name : undefined,
         isLate,
         requiredNoticeDays: requiredNotice,
@@ -125,7 +125,7 @@ export const ApplyLeave: React.FC = () => {
             Select Leave Type
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Annual Leave */}
             <div
               onClick={() => setSelectedType('annual')}
@@ -143,6 +143,29 @@ export const ApplyLeave: React.FC = () => {
                 Paid time off from work.
               </div>
               {selectedType === 'annual' && (
+                <div className="absolute top-4 right-4 text-white">
+                  <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                </div>
+              )}
+            </div>
+
+            {/* Medical Leave (sick / MC) */}
+            <div
+              onClick={() => setSelectedType('sick')}
+              className={`cursor-pointer rounded-2xl p-6 transition-all duration-200 relative border ${
+                selectedType === 'sick'
+                  ? 'bg-[#006e2d] text-white border-[#006e2d] shadow-md'
+                  : 'bg-[#ededf9] text-[#191b23] border-transparent hover:border-[#c3c6d7] hover:shadow-2xs'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-4xl mb-4 block ${selectedType === 'sick' ? 'text-white' : 'text-[#006e2d]'}`}>
+                medical_services
+              </span>
+              <div className="font-bold text-lg mb-1">Medical Leave</div>
+              <div className={`text-xs ${selectedType === 'sick' ? 'text-green-100' : 'text-[#434655]'}`}>
+                Medical / MC (sick) absence.
+              </div>
+              {selectedType === 'sick' && (
                 <div className="absolute top-4 right-4 text-white">
                   <span className="material-symbols-outlined text-[20px]">check_circle</span>
                 </div>

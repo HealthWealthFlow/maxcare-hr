@@ -382,6 +382,8 @@ export const LeaveProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           ent.annualPending = Math.max(0, ent.annualPending - targetReq.durationDays);
           ent.annualUsed += targetReq.durationDays;
         }
+      } else if (targetReq.type === 'sick') {
+        ent.sickUsed += targetReq.durationDays;
       }
       const updatedEmp = { ...targetEmp, entitlements: ent };
       setEmployees(prev => prev.map(e => (e.id === targetEmp.id ? updatedEmp : e)));
