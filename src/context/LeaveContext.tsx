@@ -94,7 +94,19 @@ export const LeaveProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>('emp-1');
   const [selectedRequestIdForReview, setSelectedRequestIdForReview] = useState<string | null>('REQ-9921A');
   // Which staff member the employee portal is currently "viewing as" (preview switch).
-  const [activeEmployeeId, setActiveEmployeeId] = useState<string>('emp-1');
+  // On reload, restore the account tied to the logged-in user (so their own info shows).
+  const [activeEmployeeId, setActiveEmployeeId] = useState<string>(() => {
+    const savedUserId = localStorage.getItem('maxcare_loggedin_user');
+    if (!savedUserId) return 'emp-1';
+    try {
+      const list: User[] = JSON.parse(localStorage.getItem('maxcare_users') || '[]');
+      const u = list.find((x) => x.id === savedUserId) || SEED_USERS.find((x) => x.id === savedUserId);
+      if (u && u.employeeId) return u.employeeId;
+    } catch {
+      /* ignore */
+    }
+    return 'emp-1';
+  });
 
   const [users, setUsers] = useState<User[]>(() => {
     if (localStorage.getItem('leavehr_data_version') !== DATA_VERSION) return SEED_USERS;
