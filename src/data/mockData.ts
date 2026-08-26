@@ -68,6 +68,30 @@ export const INITIAL_EMPLOYEES: Employee[] = [
       sickTotal: 10,
       sickUsed: 6
     }
+  },
+  {
+    id: 'emp-3',
+    empCode: 'PC003',
+    name: 'Chow Mei Yen',
+    role: 'Pharmacy Assistant',
+    department: 'Pharmacy',
+    avatar: APP_ASSETS.johnAvatar,
+    email: 'chow.meiyen@maxcare.com.my',
+    phone: '+60 17-890 1234',
+    status: 'active',
+    joinDate: '2024-01-01',
+    fullEntitlements: { annual: 18, medical: 18 },
+    entitlements: {
+      annualTotal: 18,
+      annualUsed: 0,
+      annualPending: 0,
+      unpaidApprovedYTD: 0,
+      unpaidPending: 0,
+      emergencyApprovedYTD: 0,
+      emergencyPending: 0,
+      sickTotal: 18,
+      sickUsed: 0
+    }
   }
 ];
 

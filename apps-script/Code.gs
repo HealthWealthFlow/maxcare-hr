@@ -52,7 +52,8 @@ function writeRows(sheet, headers, rows) {
 function seed() {
   var employees = [
     { id:'emp-1', empCode:'PC001', name:'Lee Xin Mei', role:'Pharmacy Assistant', department:'Pharmacy', avatar:'', email:'lee.xinmei@maxcare.com.my', phone:'+60 12-345 6789', status:'active', joinDate:'2024-01-01', annualFull:14, medicalFull:18, annualTotal:14, annualUsed:5, annualPending:2, unpaidApprovedYTD:1, unpaidPending:1, emergencyApprovedYTD:1, emergencyPending:0, sickTotal:18, sickUsed:3 },
-    { id:'emp-2', empCode:'PC002', name:'Nurul Farahin Binti Makpol', role:'Pharmacy Assistant', department:'Pharmacy', avatar:'', email:'nurul.farahin@maxcare.com.my', phone:'+60 16-789 1234', status:'active', joinDate:'2026-04-01', annualFull:8, medicalFull:14, annualTotal:6, annualUsed:3.5, annualPending:1, unpaidApprovedYTD:3, unpaidPending:0, emergencyApprovedYTD:0, emergencyPending:0, sickTotal:10, sickUsed:6 }
+    { id:'emp-2', empCode:'PC002', name:'Nurul Farahin Binti Makpol', role:'Pharmacy Assistant', department:'Pharmacy', avatar:'', email:'nurul.farahin@maxcare.com.my', phone:'+60 16-789 1234', status:'active', joinDate:'2026-04-01', annualFull:8, medicalFull:14, annualTotal:6, annualUsed:3.5, annualPending:1, unpaidApprovedYTD:3, unpaidPending:0, emergencyApprovedYTD:0, emergencyPending:0, sickTotal:10, sickUsed:6 },
+    { id:'emp-3', empCode:'PC003', name:'Chow Mei Yen', role:'Pharmacy Assistant', department:'Pharmacy', avatar:'', email:'chow.meiyen@maxcare.com.my', phone:'+60 17-890 1234', status:'active', joinDate:'2024-01-01', annualFull:18, medicalFull:18, annualTotal:18, annualUsed:0, annualPending:0, unpaidApprovedYTD:0, unpaidPending:0, emergencyApprovedYTD:0, emergencyPending:0, sickTotal:18, sickUsed:0 }
   ];
 
   var leaves = [
@@ -222,6 +223,22 @@ function appendObj(sheet, headers, obj) {
   sheet.appendRow(row);
 }
 
+// Add a new employee row (used to onboard a new staff member into the live sheet).
+function addEmployee(p) {
+  var sheet = ensureSheet('Employees', EMPLOYEE_HEADERS);
+  var rows = rowsToObjects(sheet, EMPLOYEE_HEADERS);
+  for (var i = 0; i < rows.length; i++) if (rows[i].id === p.id) return; // already exists
+  appendObj(sheet, EMPLOYEE_HEADERS, {
+    id: p.id, empCode: p.empCode, name: p.name, role: p.role, department: p.department,
+    avatar: p.avatar || '', email: p.email || '', phone: p.phone || '', status: p.status || 'active', joinDate: p.joinDate || '',
+    annualFull: Number(p.annualFull || 0), medicalFull: Number(p.medicalFull || 0),
+    annualTotal: Number(p.annualTotal), annualUsed: Number(p.annualUsed || 0), annualPending: Number(p.annualPending || 0),
+    unpaidApprovedYTD: Number(p.unpaidApprovedYTD || 0), unpaidPending: Number(p.unpaidPending || 0),
+    emergencyApprovedYTD: Number(p.emergencyApprovedYTD || 0), emergencyPending: Number(p.emergencyPending || 0),
+    sickTotal: Number(p.sickTotal), sickUsed: Number(p.sickUsed || 0)
+  });
+}
+
 // Remove Lee's old demo rows and set her real balances (annual 7 used, medical 2 used).
 function resetLee() {
   var empSheet = ensureSheet('Employees', EMPLOYEE_HEADERS);
@@ -280,6 +297,7 @@ function doGet(e) {
     if (action === 'deleteHoliday') { deleteHoliday(e.parameter); return json(snapshot()); }
     if (action === 'updatePolicy') { updatePolicy(e.parameter); return json(snapshot()); }
     if (action === 'updateEmployee') { updateEmployee(e.parameter); return json(snapshot()); }
+    if (action === 'addEmployee') { addEmployee(e.parameter); return json(snapshot()); }
     if (action === 'resetLee') { resetLee(); return json(snapshot()); }
     if (action === 'expandLee') { expandLee(); return json(snapshot()); }
     return json({ error: 'Unknown action: ' + action });

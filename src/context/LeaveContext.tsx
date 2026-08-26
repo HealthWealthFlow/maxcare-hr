@@ -23,7 +23,7 @@ import { sheetsApiUrl, fetchSheetSnapshot, pushSheetAction } from '../lib/sheets
 
 // Bump this whenever the seed data in mockData.ts changes so the app re-loads it
 // instead of keeping stale localStorage from an earlier session.
-const DATA_VERSION = 'v7';
+const DATA_VERSION = 'v8';
 
 function readSeed<T>(key: string, fallback: T): T {
   if (localStorage.getItem('leavehr_data_version') !== DATA_VERSION) return fallback;
@@ -37,6 +37,7 @@ const SEED_USERS: User[] = [
   { id: 'user-manager', name: 'Maxcare Pharmacy', username: 'Maxcare', password: 'Maxcare@2026', role: 'manager' },
   { id: 'user-lee', name: 'Lee Xin Mei', username: 'Lee Xin Mei', password: 'Lee@2026', role: 'employee', employeeId: 'emp-1' },
   { id: 'user-nurul', name: 'Nurul Farahin', username: 'Nurul Farahin', password: 'Nurul@2026', role: 'employee', employeeId: 'emp-2' },
+  { id: 'user-chow', name: 'Chow Mei Yen', username: 'Chow Mei Yen', password: 'Chow@2026', role: 'employee', employeeId: 'emp-3' },
 ];
 
 interface LeaveContextType {
