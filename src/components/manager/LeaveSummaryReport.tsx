@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useLeave } from '../../context/LeaveContext';
+import { LeaveApplicationSummary } from './LeaveApplicationSummary';
 
 export const LeaveSummaryReport: React.FC = () => {
   const { employees, setSelectedEmployeeId, setCurrentTab } = useLeave();
   const [deptFilter, setDeptFilter] = useState<string>('all');
   const [search, setSearch] = useState<string>('');
+  const [view, setView] = useState<'balance' | 'applications'>('applications');
 
   const filteredEmployees = employees.filter(emp => {
     const matchesDept = deptFilter === 'all' || emp.department === deptFilter;
@@ -51,19 +53,45 @@ export const LeaveSummaryReport: React.FC = () => {
             Leave Summary Report
           </h1>
           <p className="text-sm text-[#434655] mt-1">
-            Comprehensive team leave balance statement for FY 2026.
+            {view === 'applications'
+              ? 'Per-leave-application summary: reason, dates, supporting doc and decision.'
+              : 'Comprehensive team leave balance statement for FY 2026.'}
           </p>
+          <div className="flex gap-1 bg-[#f3f3fe] rounded-xl p-1 mt-3 w-fit">
+            <button
+              onClick={() => setView('applications')}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                view === 'applications' ? 'bg-white text-[#004ac6] shadow-2xs' : 'text-[#434655]'
+              }`}
+            >
+              Leave Applications
+            </button>
+            <button
+              onClick={() => setView('balance')}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                view === 'balance' ? 'bg-white text-[#004ac6] shadow-2xs' : 'text-[#434655]'
+              }`}
+            >
+              Team Balances
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={handleExportCSV}
-          className="bg-[#004ac6] hover:bg-[#003ea8] text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-2xs transition-all flex items-center gap-2 cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[18px]">download</span>
-          Export CSV Report
-        </button>
+        {view === 'balance' && (
+          <button
+            onClick={handleExportCSV}
+            className="bg-[#004ac6] hover:bg-[#003ea8] text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-2xs transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[18px]">download</span>
+            Export CSV Report
+          </button>
+        )}
       </div>
 
+      {view === 'applications' ? (
+        <LeaveApplicationSummary />
+      ) : (
+        <>
       {/* Filter Toolbar */}
       <div className="bg-white rounded-3xl p-5 border border-[#e1e2ed] shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
         {/* Search */}
@@ -189,6 +217,8 @@ export const LeaveSummaryReport: React.FC = () => {
           </table>
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 };
