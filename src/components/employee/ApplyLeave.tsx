@@ -324,7 +324,7 @@ export const ApplyLeave: React.FC = () => {
 
                 <div className="flex flex-col">
                   <label className="text-xs font-bold text-[#434655] uppercase tracking-wider mb-2">
-                    Supporting Document (Optional)
+                    {selectedType === 'sick' ? 'Supporting Document (Compulsory)' : 'Supporting Document (Optional)'}
                   </label>
                   <label htmlFor={fileInputId} className="border-2 border-dashed border-[#c3c6d7] hover:border-[#2563eb] rounded-2xl p-6 flex flex-col items-center justify-center gap-2 hover:bg-[#faf8ff] transition-all cursor-pointer group">
                     <span className="material-symbols-outlined text-4xl text-[#737686] group-hover:text-[#2563eb] transition-colors">
