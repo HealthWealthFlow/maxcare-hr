@@ -32,22 +32,24 @@ const UsageBar: React.FC<{ used: number; pending: number; total: number }> = ({ 
   );
 };
 
-const EarnApplied: React.FC<{ earned: number; applied: number; cap: number }> = ({ earned, applied, cap }) => {
+const EarnApplied: React.FC<{ earned: number; applied: number; cap: number; showEarned?: boolean }> = ({ earned, applied, cap, showEarned = true }) => {
   const earnedPct = cap > 0 ? Math.min(100, (earned / cap) * 100) : 0;
   const appliedPct = cap > 0 ? Math.min(100, (applied / cap) * 100) : 0;
   return (
     <div className="mt-5 space-y-4 border-t border-[#e1e2ed] pt-4">
-      <div>
-        <div className="flex justify-between text-xs font-bold text-[#434655] mb-1">
-          <span>Earn to Date</span>
-          <span>
-            {earned} / {cap} days (Max)
-          </span>
+      {showEarned && (
+        <div>
+          <div className="flex justify-between text-xs font-bold text-[#434655] mb-1">
+            <span>Earn to Date</span>
+            <span>
+              {earned} / {cap} days (Max)
+            </span>
+          </div>
+          <div className="h-4 w-full bg-[#e1e2ed] rounded-full overflow-hidden">
+            <div className="h-full bg-[#006e2d] rounded-full" style={{ width: `${earnedPct}%` }}></div>
+          </div>
         </div>
-        <div className="h-4 w-full bg-[#e1e2ed] rounded-full overflow-hidden">
-          <div className="h-full bg-[#006e2d] rounded-full" style={{ width: `${earnedPct}%` }}></div>
-        </div>
-      </div>
+      )}
       <div>
         <div className="flex justify-between text-xs font-bold text-[#434655] mb-1">
           <span>Leaves Applied</span>
@@ -102,9 +104,10 @@ export const HomeDashboard: React.FC = () => {
       used: ent.sickUsed,
       pending: 0,
       hasIndicator: true,
+      showEarned: false,
       earned: medicalEarned,
       applied: ent.sickUsed,
-      remarks: `Pro-rated ${ent.sickTotal} days for ${monthsInYear} months of service; earned to date ${medicalEarned} days. Used via Medical Certificate (MC).`,
+      remarks: `Pro-rated ${ent.sickTotal} days for ${monthsInYear} months of service. Used via Medical Certificate (MC).`,
     },
     {
       key: 'emergency',
@@ -115,6 +118,7 @@ export const HomeDashboard: React.FC = () => {
       used: ent.emergencyApprovedYTD,
       pending: ent.emergencyPending,
       hasIndicator: true,
+      showEarned: false,
       earned: emergencyMax,
       applied: ent.emergencyApprovedYTD + ent.emergencyPending,
       remarks: `Fixed at 3 days per year — pro-rated to ${emergencyMax} days for ${monthsInYear} months of service.`,
@@ -229,7 +233,7 @@ export const HomeDashboard: React.FC = () => {
                 {l.total !== null && <UsageBar used={l.used} pending={l.pending} total={l.total} />}
 
                 {l.hasIndicator && l.total !== null && (
-                  <EarnApplied earned={l.earned ?? 0} applied={l.applied ?? 0} cap={l.total} />
+                  <EarnApplied earned={l.earned ?? 0} applied={l.applied ?? 0} cap={l.total} showEarned={l.showEarned} />
                 )}
 
                 <p className={`mt-4 ${exceeds ? 'text-sm font-bold text-[#dc2626]' : 'text-xs text-[#737686]'}`}>
