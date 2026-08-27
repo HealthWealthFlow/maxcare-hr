@@ -285,6 +285,37 @@ function expandLee() {
   writeRows(sheet, LEAVE_HEADERS, kept.concat(singles));
 }
 
+// Set Lee's 8-Mar / 15-Mar / 30-Aug records to half-day (0.5) and fix her annual used (5.5).
+function fixLeeDays() {
+  var leaveSheet = ensureSheet('LeaveRequests', LEAVE_HEADERS);
+  var rows = rowsToObjects(leaveSheet, LEAVE_HEADERS);
+  var change = { 'REQ-1006F': true, 'REQ-1008H': true, 'REQ-1009I': true };
+  for (var i = 0; i < rows.length; i++) {
+    if (change[String(rows[i].id)]) {
+      rows[i].durationDays = 0.5;
+      var values = leaveSheet.getDataRange().getValues();
+      var headers = values[0];
+      var rowValues = headers.map(function (h) { return rows[i][h] !== undefined ? rows[i][h] : ''; });
+      leaveSheet.getRange(i + 2, 1, 1, headers.length).setValues([rowValues]);
+    }
+  }
+  var empSheet = ensureSheet('Employees', EMPLOYEE_HEADERS);
+  var employees = rowsToObjects(empSheet, EMPLOYEE_HEADERS);
+  for (var k = 0; k < employees.length; k++) {
+    if (employees[k].id === 'emp-1') {
+      var values = empSheet.getDataRange().getValues();
+      var headers = values[0];
+      var rowValues = headers.map(function (h) {
+        var key = String(h);
+        if (key === 'annualUsed') return 5.5;
+        return employees[k][key] !== undefined ? employees[k][key] : '';
+      });
+      empSheet.getRange(k + 2, 1, 1, headers.length).setValues([rowValues]);
+      break;
+    }
+  }
+}
+
 function doGet(e) {
   seed();
   var action = (e.parameter && e.parameter.action) || 'all';
@@ -300,6 +331,7 @@ function doGet(e) {
     if (action === 'addEmployee') { addEmployee(e.parameter); return json(snapshot()); }
     if (action === 'resetLee') { resetLee(); return json(snapshot()); }
     if (action === 'expandLee') { expandLee(); return json(snapshot()); }
+    if (action === 'fixLeeDays') { fixLeeDays(); return json(snapshot()); }
     return json({ error: 'Unknown action: ' + action });
   } catch (err) {
     return json({ error: String(err) });
