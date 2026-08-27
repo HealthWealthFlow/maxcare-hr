@@ -111,7 +111,7 @@ export const HomeDashboard: React.FC = () => {
     },
     {
       key: 'emergency',
-      title: 'Emergency Leave 2026',
+      title: 'Emergency Leave 2026 (Deduct from annual leaves)',
       icon: 'medication',
       badge: `${Math.max(0, emergencyMax - ent.emergencyApprovedYTD - ent.emergencyPending)} Days Available`,
       total: emergencyMax,
