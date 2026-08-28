@@ -74,12 +74,29 @@ export function completedMonthsOfService(joinDate: string, from: Date = new Date
 }
 
 /**
- * Earn-to-Date leave (whole days, floored): entitlement / 12 x completed months of service.
- * Capped at the entitlement and never negative. Used for Annual (and Medical) accrual.
+ * Completed whole months worked in the CURRENT calendar year (so far).
+ * e.g. Lee (joined 2024) on 27 Aug 2026 → 7 (Jan–Jul). Nurul (joined Apr 2026) → 4 (Apr–Jul).
+ * A mid-year joiner starts counting from their join month; a continuing employee from January.
+ */
+export function completedMonthsInCurrentYear(joinDate: string, from: Date = new Date()): number {
+  const year = from.getFullYear();
+  const [jy, jm, jd] = joinDate.split('-').map(Number);
+  if (!jy || !jm || !jd) return 0;
+  const startMonth = jy === year ? jm : 1; // join month if this year, else January
+  const startDay = jy === year ? jd : 1;
+  let months = (from.getMonth() + 1) - startMonth;
+  if (from.getDate() < startDay) months -= 1;
+  return Math.max(0, months);
+}
+
+/**
+ * Earn-to-Date leave = entitlement / 12 x whole months worked in the CURRENT year,
+ * rounded to 1 decimal, capped at the entitlement and never negative.
+ * e.g. Lee: (14 / 12) x 7 = 8.2.
  */
 export function earnedToDate(entitlement: number, joinDate: string): number {
-  const months = completedMonthsOfService(joinDate);
-  const earned = Math.floor((entitlement / 12) * months);
+  const months = Math.min(completedMonthsInCurrentYear(joinDate), 12);
+  const earned = Math.round(((entitlement / 12) * months) * 10) / 10;
   return Math.max(0, Math.min(entitlement, earned));
 }
 
