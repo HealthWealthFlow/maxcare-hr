@@ -316,6 +316,30 @@ function fixLeeDays() {
   }
 }
 
+// Delete Chow's test records (REQ-9196H, REQ-3216I) and reset her unpaid pending to 0.
+function cleanChow() {
+  var leaveSheet = ensureSheet('LeaveRequests', LEAVE_HEADERS);
+  var drop = { 'REQ-9196H': true, 'REQ-3216I': true };
+  var rows = rowsToObjects(leaveSheet, LEAVE_HEADERS);
+  var kept = rows.filter(function (r) { return String(r.employeeId) !== 'emp-3' || !drop[String(r.id)]; });
+  writeRows(leaveSheet, LEAVE_HEADERS, kept);
+  var empSheet = ensureSheet('Employees', EMPLOYEE_HEADERS);
+  var employees = rowsToObjects(empSheet, EMPLOYEE_HEADERS);
+  for (var i = 0; i < employees.length; i++) {
+    if (employees[i].id === 'emp-3') {
+      var values = empSheet.getDataRange().getValues();
+      var headers = values[0];
+      var rowValues = headers.map(function (h) {
+        var key = String(h);
+        if (key === 'unpaidPending') return 0;
+        return employees[i][key] !== undefined ? employees[i][key] : '';
+      });
+      empSheet.getRange(i + 2, 1, 1, headers.length).setValues([rowValues]);
+      break;
+    }
+  }
+}
+
 function doGet(e) {
   seed();
   var action = (e.parameter && e.parameter.action) || 'all';
@@ -332,6 +356,7 @@ function doGet(e) {
     if (action === 'resetLee') { resetLee(); return json(snapshot()); }
     if (action === 'expandLee') { expandLee(); return json(snapshot()); }
     if (action === 'fixLeeDays') { fixLeeDays(); return json(snapshot()); }
+    if (action === 'cleanChow') { cleanChow(); return json(snapshot()); }
     return json({ error: 'Unknown action: ' + action });
   } catch (err) {
     return json({ error: String(err) });
