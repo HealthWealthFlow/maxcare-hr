@@ -23,7 +23,7 @@ import { sheetsApiUrl, fetchSheetSnapshot, pushSheetAction } from '../lib/sheets
 
 // Bump this whenever the seed data in mockData.ts changes so the app re-loads it
 // instead of keeping stale localStorage from an earlier session.
-const DATA_VERSION = 'v9';
+const DATA_VERSION = 'v10';
 
 function readSeed<T>(key: string, fallback: T): T {
   if (localStorage.getItem('leavehr_data_version') !== DATA_VERSION) return fallback;

@@ -6,6 +6,7 @@ export const APP_META = {
   company: 'Maxcare Pharmacy',
   managerLabel: 'Pharmacy Manager',
   adminLabel: 'Pharmacy Manager (Admin)',
+  managerPhone: '+60128888888',
 };
 
 export const APP_ASSETS = {
@@ -29,7 +30,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     department: 'Pharmacy',
     avatar: APP_ASSETS.aliceAvatar,
     email: 'lee.xinmei@maxcare.com.my',
-    phone: '+60 12-345 6789',
+    phone: '+60163268870',
     status: 'active',
     joinDate: '2024-01-01',
     fullEntitlements: { annual: 14, medical: 18 },
@@ -53,7 +54,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     department: 'Pharmacy',
     avatar: APP_ASSETS.johnCasual,
     email: 'nurul.farahin@maxcare.com.my',
-    phone: '+60 16-789 1234',
+    phone: '+60177394632',
     status: 'active',
     joinDate: '2026-04-01',
     fullEntitlements: { annual: 8, medical: 14 },
@@ -77,7 +78,7 @@ export const INITIAL_EMPLOYEES: Employee[] = [
     department: 'Pharmacy',
     avatar: APP_ASSETS.johnAvatar,
     email: 'chow.meiyen@maxcare.com.my',
-    phone: '+60 17-890 1234',
+    phone: '+601111111111',
     status: 'active',
     joinDate: '2024-01-01',
     fullEntitlements: { annual: 18, medical: 18 },
