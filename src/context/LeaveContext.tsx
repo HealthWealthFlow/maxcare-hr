@@ -109,9 +109,20 @@ export const LeaveProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const [users, setUsers] = useState<User[]>(() => {
-    if (localStorage.getItem('leavehr_data_version') !== DATA_VERSION) return SEED_USERS;
-    const saved = localStorage.getItem('maxcare_users');
-    return saved ? (JSON.parse(saved) as User[]) : SEED_USERS;
+    // Preserve existing accounts (so a changed password is never reset by a
+    // data-version bump / re-deploy). Only add genuinely new seed users.
+    let existing: User[] = [];
+    try {
+      const saved = localStorage.getItem('maxcare_users');
+      if (saved) existing = JSON.parse(saved) as User[];
+    } catch {
+      existing = [];
+    }
+    const merged = existing.slice();
+    SEED_USERS.forEach((s) => {
+      if (!merged.some((u) => u.id === s.id)) merged.push(s);
+    });
+    return merged.length ? merged : SEED_USERS;
   });
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(() => localStorage.getItem('maxcare_loggedin_user'));
 
