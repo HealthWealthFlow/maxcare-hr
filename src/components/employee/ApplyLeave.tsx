@@ -331,7 +331,7 @@ export const ApplyLeave: React.FC = () => {
                       photo_camera
                     </span>
                     <div className="text-sm text-[#191b23] text-center">
-                      <span className="font-semibold text-[#004ac6]">Take a photo or upload</span> (on mobile this opens your camera)<br />
+                      <span className="font-semibold text-[#004ac6]">Take a photo, choose from gallery, or upload</span><br />
                       <span className="text-xs text-[#434655]">
                         {docFile ? `Selected: ${docFile.name}` : 'Photo (JPG/PNG) or PDF (max. 10MB)'}
                       </span>
@@ -340,7 +340,6 @@ export const ApplyLeave: React.FC = () => {
                       id={fileInputId}
                       type="file"
                       accept="image/*,application/pdf"
-                      capture="environment"
                       className="hidden"
                       onChange={(e) => {
                         if (e.target.files && e.target.files[0]) {
