@@ -7,7 +7,7 @@
  */
 
 var EMPLOYEE_HEADERS = ['id','empCode','name','role','department','avatar','email','phone','status','joinDate','annualFull','medicalFull','annualTotal','annualUsed','annualPending','unpaidApprovedYTD','unpaidPending','emergencyApprovedYTD','emergencyPending','sickTotal','sickUsed'];
-var LEAVE_HEADERS = ['id','employeeId','employeeName','employeeRole','employeeAvatar','department','type','startDate','endDate','durationDays','reason','status','submittedDate','rejectionReason','isLate','requiredNoticeDays','actualNoticeDays'];
+var LEAVE_HEADERS = ['id','employeeId','employeeName','employeeRole','employeeAvatar','department','type','startDate','endDate','durationDays','reason','status','submittedDate','rejectionReason','isLate','requiredNoticeDays','actualNoticeDays','supportingDoc'];
 var ADJ_HEADERS = ['id','employeeId','type','days','date','reason','byUser','byAvatar'];
 var HOLIDAY_HEADERS = ['id','name','date','day','month','description'];
 var POLICY_HEADERS = ['annualNoticeDays','unpaidNoticeDays','emergencyNoticeDays','emergencyTreatment','mon','tue','wed','thu','fri','sat','sun'];
@@ -128,7 +128,7 @@ function snapshot() {
     };
   });
   var leaveRequests = rowsToObjects(leaveSheet, LEAVE_HEADERS).map(function (r) {
-    return { id: r.id, employeeId: r.employeeId, employeeName: r.employeeName, employeeRole: r.employeeRole, employeeAvatar: r.employeeAvatar, department: r.department, type: r.type, startDate: r.startDate, endDate: r.endDate, durationDays: Number(r.durationDays), reason: r.reason, status: r.status, submittedDate: r.submittedDate, rejectionReason: r.rejectionReason || '', isLate: r.isLate, requiredNoticeDays: Number(r.requiredNoticeDays), actualNoticeDays: Number(r.actualNoticeDays) };
+    return { id: r.id, employeeId: r.employeeId, employeeName: r.employeeName, employeeRole: r.employeeRole, employeeAvatar: r.employeeAvatar, department: r.department, type: r.type, startDate: r.startDate, endDate: r.endDate, durationDays: Number(r.durationDays), reason: r.reason, status: r.status, submittedDate: r.submittedDate, rejectionReason: r.rejectionReason || '', isLate: r.isLate, requiredNoticeDays: Number(r.requiredNoticeDays), actualNoticeDays: Number(r.actualNoticeDays), supportingDoc: r.supportingDoc || '' };
   });
   var adjustments = rowsToObjects(adjSheet, ADJ_HEADERS).map(function (a) { return { id: a.id, employeeId: a.employeeId, type: a.type, days: Number(a.days), date: a.date, reason: a.reason, byUser: a.byUser, byAvatar: a.byAvatar }; });
   var holidays = rowsToObjects(holSheet, HOLIDAY_HEADERS).map(function (h) { return { id: h.id, name: h.name, date: h.date, day: String(h.day), month: h.month, description: h.description }; });
@@ -148,7 +148,7 @@ function json(data) {
 
 function addLeave(p) {
   var sheet = ensureSheet('LeaveRequests', LEAVE_HEADERS);
-  var row = { id: p.id, employeeId: p.employeeId, employeeName: p.employeeName, employeeRole: p.employeeRole, employeeAvatar: p.employeeAvatar, department: p.department, type: p.type, startDate: p.startDate, endDate: p.endDate, durationDays: Number(p.durationDays), reason: p.reason, status: p.status || 'pending', submittedDate: p.submittedDate, rejectionReason: p.rejectionReason || '', isLate: (p.isLate === 'true' || p.isLate === true), requiredNoticeDays: Number(p.requiredNoticeDays || 7), actualNoticeDays: Number(p.actualNoticeDays || 0) };
+  var row = { id: p.id, employeeId: p.employeeId, employeeName: p.employeeName, employeeRole: p.employeeRole, employeeAvatar: p.employeeAvatar, department: p.department, type: p.type, startDate: p.startDate, endDate: p.endDate, durationDays: Number(p.durationDays), reason: p.reason, status: p.status || 'pending', submittedDate: p.submittedDate, rejectionReason: p.rejectionReason || '', isLate: (p.isLate === 'true' || p.isLate === true), requiredNoticeDays: Number(p.requiredNoticeDays || 7), actualNoticeDays: Number(p.actualNoticeDays || 0), supportingDoc: p.supportingDoc || '' };
   appendObj(sheet, LEAVE_HEADERS, row);
 }
 
@@ -340,8 +340,19 @@ function cleanChow() {
   }
 }
 
+// Add the supportingDoc column to the LeaveRequests header if it's missing (no data wipe).
+function ensureLeaveHeader() {
+  var sheet = ensureSheet('LeaveRequests', LEAVE_HEADERS);
+  var values = sheet.getDataRange().getValues();
+  var header = values[0] || [];
+  if (header.indexOf('supportingDoc') === -1) {
+    sheet.getRange(1, header.length + 1, 1, 1).setValue('supportingDoc');
+  }
+}
+
 function doGet(e) {
   seed();
+  ensureLeaveHeader();
   var action = (e.parameter && e.parameter.action) || 'all';
   try {
     if (action === 'all') return json(snapshot());

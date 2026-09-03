@@ -18,6 +18,7 @@ export interface LeaveRequest {
   submittedDate: string;
   rejectionReason?: string;
   supportingDocName?: string;
+  supportingDoc?: string; // base64 data URL / link of the uploaded supporting document
   isLate: boolean;
   requiredNoticeDays: number;
   actualNoticeDays: number;

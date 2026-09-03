@@ -18,6 +18,7 @@ export const ApplyLeave: React.FC = () => {
   const [endDate, setEndDate] = useState<string>('2026-08-29');
   const [reason, setReason] = useState<string>('');
   const [docFile, setDocFile] = useState<File | null>(null);
+  const [docData, setDocData] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState<boolean>(false);
   // Manual duration (prefilled from date range, but editable by the user).
@@ -67,6 +68,7 @@ export const ApplyLeave: React.FC = () => {
         durationDays: durationDays,
         reason: reason || (selectedType === 'annual' ? 'Annual leave' : selectedType === 'emergency' ? 'Family emergency' : selectedType === 'sick' ? 'Medical leave' : 'Personal matter'),
         supportingDocName: docFile ? docFile.name : undefined,
+        supportingDoc: docData || undefined,
         isLate,
         requiredNoticeDays: requiredNotice,
         actualNoticeDays: noticeDays
@@ -342,8 +344,32 @@ export const ApplyLeave: React.FC = () => {
                       accept="image/*,application/pdf"
                       className="hidden"
                       onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setDocFile(e.target.files[0]);
+                        const file = e.target.files && e.target.files[0];
+                        if (!file) return;
+                        setDocFile(file);
+                        setDocData(null);
+                        // For images, downscale to a small JPEG data URL so the manager can view it.
+                        if (file.type.startsWith('image/')) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            const img = new Image();
+                            img.onload = () => {
+                              const MAX = 720;
+                              let w = img.width, h = img.height;
+                              if (w > MAX || h > MAX) {
+                                const r = Math.min(MAX / w, MAX / h);
+                                w = Math.round(w * r); h = Math.round(h * r);
+                              }
+                              const canvas = document.createElement('canvas');
+                              canvas.width = w; canvas.height = h;
+                              const ctx = canvas.getContext('2d');
+                              if (!ctx) return;
+                              ctx.drawImage(img, 0, 0, w, h);
+                              setDocData(canvas.toDataURL('image/jpeg', 0.82));
+                            };
+                            img.src = reader.result as string;
+                          };
+                          reader.readAsDataURL(file);
                         }
                       }}
                     />

@@ -207,6 +207,32 @@ export const LeaveReview: React.FC = () => {
               </div>
             </div>
 
+            {/* Supporting Document */}
+            {(request.supportingDoc || request.supportingDocName) && (
+              <div>
+                <span className="block text-xs font-bold text-[#737686] uppercase mb-2">
+                  Supporting Document
+                </span>
+                <div className="bg-[#faf8ff] p-4 rounded-2xl border border-[#e1e2ed]">
+                  {request.supportingDoc ? (
+                    <a
+                      href={request.supportingDoc}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 bg-[#dbe1ff] text-[#004ac6] font-bold text-xs px-3 py-2 rounded-xl hover:bg-[#c9d2ff] transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">description</span>
+                      View {request.supportingDocName || 'uploaded document'}
+                    </a>
+                  ) : (
+                    <span className="text-[#434655] text-sm">
+                      Uploaded: {request.supportingDocName || 'a document'}
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* If Rejected already, show rejection reason */}
             {request.status === 'rejected' && request.rejectionReason && (
               <div className="bg-[#ffdad6]/40 border border-[#ba1a1a]/40 p-4 rounded-2xl text-xs text-[#ba1a1a]">
